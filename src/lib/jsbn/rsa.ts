@@ -303,12 +303,16 @@ export class RSAKey {
         if (c == null) {
             return null;
         }
-        const h = c.toString(16);
-        if ((h.length & 1) == 0) {
+        let h = c.toString(16);
+        const maxLength = (this.n.bitLength() + 7) >> 3;
+        if (maxLength * 2 == h.length) {
             return h;
-        } else {
-            return "0" + h;
         }
+        // fix zero before result
+        for (let i = 0; i <= maxLength * 2 - h.length; i++) {
+            h = "0" + h;
+        }
+        return h;
     }
 
     public verify(text:string, signature:string, digestMethod:(str:string) => string):boolean {
